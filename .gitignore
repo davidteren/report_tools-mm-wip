@@ -52,7 +52,6 @@ logs/
 
 # Local data files
 *.csv
-!sample_data.csv
 
 # Jupyter Notebooks
 .ipynb_checkpoints
