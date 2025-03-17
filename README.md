@@ -30,7 +30,7 @@ This will start the Streamlit server and open the application in your default we
 
 ## Usage Guide
 
-1. The app will automatically load the sample data file (`job_report_20250314144738-sample-200.csv`)
+1. **Upload Data:** Use the file uploader in the sidebar to upload a job report CSV file
 2. **Browse by Region:** Use the left panel to navigate through regions and item codes
 3. **View Item Details:** Click on an item code to see detailed information in the right panel
 4. **Filter Data:** Use the sidebar to filter by region
