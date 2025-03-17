@@ -40,7 +40,6 @@ This will start the Streamlit server and open the application in your default we
 
 - `app.py`: Main Streamlit application
 - `report_analyzer.py`: Data processing functions
-- `job_report_20250314144738-sample-200.csv`: Sample data file
 - `requirements.txt`: Required Python packages
 
 ## Development

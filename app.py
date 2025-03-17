@@ -55,8 +55,6 @@ st.sidebar.header("Upload Data")
 
 # Add instructions for file upload
 st.sidebar.markdown("""Upload a job report CSV file to analyze.
-
-You can use the sample file: `job_report_20250314144738-sample-200.csv`
 """)
 
 # Create file uploader with better error handling
@@ -72,29 +70,15 @@ def get_cached_data(file):
         st.error(f"Error processing file: {str(e)}")
         return None
 
-# Check if sample file exists and add a button to use it
-sample_file_path = "job_report_20250314144738-sample-200.csv"
-if os.path.exists(sample_file_path):
-    if st.sidebar.button("Use Sample Data"):
-        try:
-            df = load_data(sample_file_path)
-            st.success(f"Sample data loaded successfully: {len(df)} records")
-            uploaded_file = True  # Set a flag to indicate data is loaded
-        except Exception as e:
-            st.error(f"Error loading sample data: {str(e)}")
+# No sample data option
 
 if uploaded_file is not None:
     try:
-        # Check if we're using the sample data or uploaded file
-        if isinstance(uploaded_file, bool):
-            # We already loaded the sample data above
-            pass
-        else:
-            df = get_cached_data(uploaded_file)
-            if df is None:
-                st.error("Failed to process the uploaded file. Please check the file format.")
-                st.stop()
-            st.success(f"Data loaded successfully: {len(df)} records")
+        df = get_cached_data(uploaded_file)
+        if df is None:
+            st.error("Failed to process the uploaded file. Please check the file format.")
+            st.stop()
+        st.success(f"Data loaded successfully: {len(df)} records")
         
         # Create sidebar for filtering
         st.sidebar.header("Filters")
@@ -250,29 +234,6 @@ else:
     # Display instructions when no file is uploaded
     st.info("👆 Please upload a job report CSV file using the file uploader in the sidebar.")
     
-    # Show sample format
-    st.subheader("Expected CSV Format")
-    st.markdown("Your CSV file should contain the following columns:")
-    sample_columns = [
-        "Region", "Store Code", "Store Name", "Store Brand", "Item Code", 
-        "Description", "Unit Size", "Price", "Start Date", "End Date", 
-        "Language", "SPM Code"
-    ]
-    
-    # Create a sample dataframe to show the expected format
-    sample_df = pd.DataFrame(columns=sample_columns)
-    st.dataframe(sample_df)
-    
-    # Add instructions
-    st.markdown("""### Instructions:
-    1. Use the file uploader in the sidebar to upload your CSV file
-    2. Once uploaded, you'll be able to:
-       - Browse items by region and item code
-       - View detailed information for each item
-       - See summary analytics and visualizations
-    """)
-
-# Add footer
-st.markdown("---")
-st.markdown("Job Report Analyzer v1.0", unsafe_allow_html=True)
-
+    # Add footer
+    st.markdown("---")
+    st.markdown("Job Report Analyzer v1.0", unsafe_allow_html=True)
