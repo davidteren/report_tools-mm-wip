@@ -52,17 +52,49 @@ st.title("Job Report Analyzer")
 
 # File uploader in sidebar
 st.sidebar.header("Upload Data")
-uploaded_file = st.sidebar.file_uploader("Upload job report CSV file", type=["csv"])
+
+# Add instructions for file upload
+st.sidebar.markdown("""Upload a job report CSV file to analyze.
+
+You can use the sample file: `job_report_20250314144738-sample-200.csv`
+""")
+
+# Create file uploader with better error handling
+uploaded_file = st.sidebar.file_uploader("Choose a CSV file", type=["csv"])
 
 @st.cache_data
 def get_cached_data(file):
-    return load_data(file)
+    try:
+        # Reset file pointer to beginning
+        file.seek(0)
+        return load_data(file)
+    except Exception as e:
+        st.error(f"Error processing file: {str(e)}")
+        return None
+
+# Check if sample file exists and add a button to use it
+sample_file_path = "job_report_20250314144738-sample-200.csv"
+if os.path.exists(sample_file_path):
+    if st.sidebar.button("Use Sample Data"):
+        try:
+            df = load_data(sample_file_path)
+            st.success(f"Sample data loaded successfully: {len(df)} records")
+            uploaded_file = True  # Set a flag to indicate data is loaded
+        except Exception as e:
+            st.error(f"Error loading sample data: {str(e)}")
 
 if uploaded_file is not None:
     try:
-        df = get_cached_data(uploaded_file)
-        # Show data loading success message
-        st.success(f"Data loaded successfully: {len(df)} records")
+        # Check if we're using the sample data or uploaded file
+        if isinstance(uploaded_file, bool):
+            # We already loaded the sample data above
+            pass
+        else:
+            df = get_cached_data(uploaded_file)
+            if df is None:
+                st.error("Failed to process the uploaded file. Please check the file format.")
+                st.stop()
+            st.success(f"Data loaded successfully: {len(df)} records")
         
         # Create sidebar for filtering
         st.sidebar.header("Filters")

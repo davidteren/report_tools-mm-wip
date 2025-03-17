@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
+import os
 from typing import Dict, List, Optional, Union, Any
 
-def load_data(file_path: str) -> pd.DataFrame:
+def load_data(file_path: Union[str, Any]) -> pd.DataFrame:
     """
     Load CSV data from the given file path or file object
     
@@ -13,11 +14,37 @@ def load_data(file_path: str) -> pd.DataFrame:
         pandas DataFrame with the report data
     """
     try:
+        # Check if file_path is a string (path) or file-like object
         if isinstance(file_path, str):
+            # It's a file path
+            if not os.path.exists(file_path):
+                raise FileNotFoundError(f"File not found: {file_path}")
             df = pd.read_csv(file_path)
         else:
+            # It's a file-like object (e.g., from file_uploader)
+            # Reset file pointer to beginning to ensure we read from the start
+            try:
+                file_path.seek(0)
+            except:
+                pass  # Not all file-like objects support seek
             df = pd.read_csv(file_path)
+        
+        # Validate that required columns exist
+        required_columns = [
+            "Region", "Store Code", "Store Name", "Store Brand", 
+            "Item Code", "Description", "Unit Size", "Price", 
+            "Start Date", "End Date", "Language", "SPM Code"
+        ]
+        
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        if missing_columns:
+            raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")
+            
         return df
+    except pd.errors.EmptyDataError:
+        raise ValueError("The file is empty.")
+    except pd.errors.ParserError:
+        raise ValueError("Error parsing CSV file. Please check the file format.")
     except Exception as e:
         print(f"Error loading data: {str(e)}")
         raise
